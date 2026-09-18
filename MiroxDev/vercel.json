@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "functions": {
+    "api/index.py": { "maxDuration": 60, "memory": 1024 }
+  },
+  "rewrites": [
+    { "source": "/api/:path*", "destination": "/api/index" },
+    { "source": "/developer", "destination": "/api/index" },
+    { "source": "/admin/console", "destination": "/api/index" },
+    { "source": "/download/agent", "destination": "/api/index" }
+  ]
+}

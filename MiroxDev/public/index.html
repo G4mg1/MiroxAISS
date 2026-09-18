@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en" data-mode="light" data-theme="warm" data-corner="soft" data-font="system">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>MiroxAI — by OpenSurr</title>
+<link rel="icon" type="image/png" href="/logo.png">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
+<link id="hljs-dark" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/atom-one-dark.min.css" disabled>
+<link id="hljs-light" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/atom-one-light.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<linearGradient id="videoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+<stop offset="0%" stop-color="#c4694b"/><stop offset="100%" stop-color="#8b5cf6"/>
+</linearGradient></defs></svg>
+
+<div id="userBackground" aria-hidden="true"></div>
+<div id="loadingScreen"><img src="/logo.png" alt="" class="load-logo theme-logo"><span class="load-name">MiroxAI</span><span class="load-sub">by OpenSurr</span><div class="load-bar"><span></span></div></div>
+
+<div class="app">
+  <div class="sidebar-scrim" id="sidebarScrim"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="brand"><img src="/logo.png" alt="" class="theme-logo"><span>MiroxAI</span><button class="sidebar-close" id="sidebarCloseBtn"><i class="ri-close-line"></i></button></div>
+    <div class="sidebar-search"><i class="ri-search-line"></i><input type="text" id="chatSearchInput" placeholder="Search chats…" autocomplete="off"><button id="clearSearchBtn" type="button"><i class="ri-close-line"></i></button></div>
+    <button class="new-chat-btn" id="newChatBtn"><i class="ri-add-line"></i> New chat</button>
+    <div class="history"><p class="history-label">Chats</p><ul id="historyList"><li class="history-empty">No conversations yet</li></ul></div>
+    <div class="tier-chip" id="tierChip"><div class="tier-chip-icon"><i class="ri-vip-crown-2-line"></i></div><div class="tier-chip-info"><div class="tier-chip-label" id="tierLabel">Free plan</div><div class="tier-chip-meta" id="tierMeta">Sign in to continue</div></div><button class="tier-chip-btn" id="upgradeBtn">Upgrade</button></div>
+    <div class="sidebar-footer"><div class="user-chip" id="userChip"><i class="ri-user-3-line"></i><span id="userChipLabel">Sign in</span></div><button class="icon-only-btn" id="settingsBtn"><i class="ri-settings-3-line"></i></button></div>
+    <p class="made-by">Made by <b>OpenSurr</b></p>
+  </aside>
+  <main class="main">
+    <header class="topbar"><div class="topbar-left"><button class="hamburger-btn" id="hamburgerBtn"><i class="ri-menu-line"></i></button><div class="topbar-title"><span class="title-row"><h1 id="chatTitle">New chat</h1><button class="icon-only-btn small" id="editTitleBtn"><i class="ri-pencil-line"></i></button></span><small id="chatSubtitle"></small></div></div><div class="topbar-actions"><div class="admin-pill" id="adminPill" style="display:none;"><i class="ri-shield-star-line"></i> ADMIN</div><div class="model-switcher" id="modelSwitcher"></div></div></header>
+    <div class="chat" id="chat"><div class="message ai"><div class="avatar ai-avatar"><img src="/logo.png" alt="" class="theme-logo"></div><div class="bubble-wrap"><div class="bubble">Hi, I'm MiroxAI — built by the OpenSurr team. Try: <code>/image a fox in snow</code> · <code>/video a fox running</code> · attach an image · <code>build me a todo app</code></div></div></div></div>
+    <div class="attachment-preview" id="attachmentPreview" style="display:none;"><span class="att-spinner" id="attSpinner"><i class="ri-loader-4-line"></i></span><span class="att-icon" id="attIcon" style="display:none;"><i class="ri-file-text-line"></i></span><img id="attThumb" class="att-thumb" style="display:none;" alt=""><span id="attachmentName">Reading file…</span><button type="button" id="removeAttachmentBtn"><i class="ri-close-line"></i></button></div>
+    <form class="composer" id="composerForm">
+      <button type="button" class="icon-btn" id="attachBtn"><i class="ri-attachment-2"></i></button>
+      <input type="file" id="fileInput" accept=".txt,.md,.csv,.json,.js,.jsx,.ts,.tsx,.py,.rb,.go,.rs,.java,.c,.h,.cpp,.cs,.php,.sql,.sh,.html,.css,.scss,.xml,.yaml,.yml,.toml,.ini,.env,.log,.lua,image/png,image/jpeg,image/webp,image/gif" hidden>
+      <button type="button" class="icon-btn" id="searchToggleBtn" title="Search the web"><i class="ri-search-line"></i></button>
+      <button type="button" class="icon-btn" id="micBtn" title="Voice input"><i class="ri-mic-line"></i></button>
+      <input type="text" id="messageInput" placeholder="Message MiroxAI  ·  /image  ·  /video" autocomplete="off" spellcheck="true">
+      <button type="submit" class="send-btn" id="sendBtn"><i class="ri-arrow-up-line"></i></button>
+    </form>
+    <p class="disclaimer" id="disclaimer">Sign in to start chatting. Made by the <b>OpenSurr</b> team.</p>
+  </main>
+  <aside class="tool-rail" id="toolRail"><div class="rail-head">Tools</div><div class="rail-items">
+    <button class="rail-btn" id="talkModeBtn"><span class="rail-icon"><i class="ri-phone-line"></i></span><span class="rail-label">Talk</span></button>
+    <button class="rail-btn" id="imageModeBtn"><span class="rail-icon"><i class="ri-image-line"></i></span><span class="rail-label">Image</span></button>
+    <button class="rail-btn" id="videoModeBtn"><span class="rail-icon"><i class="ri-movie-line"></i></span><span class="rail-label">Video</span></button>
+    <button class="rail-btn" id="backgroundModeBtn"><span class="rail-icon"><i class="ri-image-2-line"></i></span><span class="rail-label">BG</span></button>
+    <button class="rail-btn" id="extensionsModeBtn"><span class="rail-icon"><i class="ri-puzzle-2-line"></i></span><span class="rail-label">Ext</span></button>
+    <button class="rail-btn" id="plansModeBtn"><span class="rail-icon"><i class="ri-vip-crown-2-line"></i></span><span class="rail-label">Plans</span></button>
+    <button class="rail-btn" id="supportModeBtn"><span class="rail-icon"><i class="ri-customer-service-2-line"></i></span><span class="rail-label">Support</span></button>
+  </div></aside>
+  <button class="rail-toggle" id="railToggleBtn"><i class="ri-arrow-right-s-line icon-collapse"></i><i class="ri-arrow-left-s-line icon-expand"></i></button>
+</div>
+
+<!-- ANNOUNCEMENT -->
+<div class="modal-overlay" id="announceModal"><div class="modal"><button class="modal-close" data-close="announceModal"><i class="ri-close-line"></i></button>
+<div class="modal-brand"><img src="/logo.png" class="theme-logo" alt=""><h2>The End of Project Agent</h2></div>
+<p class="modal-sub">We have replaced it with <b>AgentWeb</b>. AgentWeb creates your project folder for you, then lets you download and use it right away — no install, no setup.</p>
+<div class="announce-points"><div class="announce-point"><i class="ri-check-line"></i><span>No local agent to install.</span></div><div class="announce-point"><i class="ri-check-line"></i><span>Every project ships as a ready-to-use ZIP.</span></div><div class="announce-point"><i class="ri-check-line"></i><span>Download, unzip, run — just like that.</span></div></div>
+<button class="save-btn full" id="announceOkBtn"><i class="ri-check-line"></i> Got it</button></div></div>
+
+<!-- LOGIN -->
+<div class="modal-overlay" id="loginModal"><div class="modal"><button class="modal-close" data-close="loginModal"><i class="ri-close-line"></i></button>
+<div class="modal-brand"><img src="/logo.png" class="theme-logo" alt=""><h2 id="loginTitle">Sign in</h2></div>
+<p class="modal-sub">Enter your name and email to continue. No password.</p>
+<form id="simpleLoginForm"><label class="field-label">Name</label><input type="text" id="simpleLoginName" placeholder="Alex" required><label class="field-label">Email</label><input type="email" id="simpleLoginEmail" placeholder="alex@example.com" required><button type="submit" class="save-btn full"><i class="ri-login-box-line"></i> Continue</button></form>
+<p class="field-hint" id="loginStatus"></p></div></div>
+
+<!-- SUPPORT -->
+<div class="modal-overlay" id="supportModal"><div class="modal wide"><button class="modal-close" data-close="supportModal"><i class="ri-close-line"></i></button>
+<div class="modal-brand"><img src="/logo.png" class="theme-logo" alt=""><h2>Contact Support</h2></div>
+<p class="modal-sub">Describe your issue. We reply in <b>15 to 30 minutes</b>.</p>
+<div id="newTicketForm"><label class="field-label">Category</label><select id="reportCategory"><option value="general">General</option><option value="bug">Bug</option><option value="billing">Billing</option><option value="abuse">Abuse</option><option value="feature">Feature</option></select>
+<label class="field-label">Subject</label><input type="text" id="reportSubject" placeholder="Short summary (optional)">
+<label class="field-label">Message</label><textarea id="reportMessage" class="image-prompt" rows="5" placeholder="Explain what happened…" required></textarea>
+<button class="save-btn full" id="submitReportBtn"><i class="ri-send-plane-fill"></i> Send to support</button>
+<p class="field-hint" id="reportStatus"></p></div>
+<div class="support-eta" id="supportEta" style="display:none;"><i class="ri-time-line"></i><div><b>Ticket received ✅</b><p>A customer service agent will reply in <b>15 to 30 minutes</b>.</p><p>Ticket ID: <code id="ticketIdDisplay">—</code></p></div></div>
+<div class="support-mine" id="supportMine"></div></div></div>
+
+<!-- PLANS -->
+<div class="modal-overlay" id="plansModal"><div class="modal wide"><button class="modal-close" data-close="plansModal"><i class="ri-close-line"></i></button>
+<div class="modal-brand"><img src="/logo.png" class="theme-logo" alt=""><h2>Plans &amp; API keys</h2></div>
+<p class="modal-sub">Pay via Robux gamepass or hand the admin AFG cash directly.</p>
+<div class="plans-grid" id="plansGrid"></div>
+<div class="plans-note"><i class="ri-alert-line"></i><div><b>How to activate:</b><ol><li>Pick a plan and click Buy.</li><li>Pay via Roblox gamepass OR hand cash to admin.</li><li>Screenshot the receipt and email to <b id="plansEmail">admin@example.com</b> <span id="plansPhoneWrap">(phone: <b id="plansPhone"></b>)</span>.</li><li>Admin activates within 24h.</li></ol><p class="plans-warning"><b>⚠ Warning:</b> Fake screenshots = permanent ban.</p></div></div>
+<div class="keys-section" id="keysSection"><div class="keys-head"><h3><i class="ri-key-2-line"></i> Your API keys</h3><div class="keys-usage" id="keysUsage"></div></div>
+<div class="keys-add"><input type="text" id="newKeyNameInput" placeholder="Key name"><button class="save-btn" id="generateKeyBtn"><i class="ri-add-line"></i> Generate</button></div>
+<p class="field-hint" id="keyGenStatus"></p><ul class="keys-list" id="keysList"></ul>
+<div class="dev-link-box"><i class="ri-code-s-slash-line"></i><div><b>Developer docs</b><p>Test your API key with live examples.</p><a href="/developer" target="_blank" class="save-btn outline" style="margin-top:10px;"><i class="ri-external-link-line"></i> Open Developer Help</a></div></div></div></div></div>
+
+<!-- BUY -->
+<div class="modal-overlay" id="buyModal"><div class="modal"><button class="modal-close" data-close="buyModal"><i class="ri-close-line"></i></button>
+<div class="modal-brand"><img src="/logo.png" class="theme-logo" alt=""><h2 id="buyTitle">Buy plan</h2></div>
+<p class="modal-sub" id="buySub"></p><div id="buyOptions"></div>
+<div class="plans-note" style="margin-top:18px;"><i class="ri-alert-line"></i><div><b>After payment:</b><ol><li>Screenshot your receipt.</li><li>Email it to <b id="buyEmail">admin@example.com</b>.</li><li>Admin activates within 24h.</li></ol><p class="plans-warning"><b>⚠ Warning:</b> Fake screenshots = permanent ban.</p></div></div></div></div>
+
+<!-- SETTINGS -->
+<div class="modal-overlay" id="settingsModal"><div class="modal wide"><button class="modal-close" data-close="settingsModal"><i class="ri-close-line"></i></button>
+<div class="modal-brand"><img src="/logo.png" class="theme-logo" alt=""><h2>Settings</h2></div>
+<div class="settings-tabs" id="settingsTabs"><button class="settings-tab active" data-tab="general">General</button><button class="settings-tab" data-tab="appearance">Appearance</button><button class="settings-tab" data-tab="voice">Voice</button><button class="settings-tab" data-tab="personalization">Personal</button><button class="settings-tab" data-tab="memory">Memory</button><button class="settings-tab admin-only" data-tab="admin" style="display:none;">Admin</button></div>
+<div class="settings-pane active" data-pane="general">
+<div class="settings-section"><h4><i class="ri-server-line"></i> Server</h4><button class="save-btn" id="connectServerBtn"><i class="ri-wifi-line"></i> Check server</button><p class="field-hint" id="serverStatus">Not checked yet</p></div>
+<div class="settings-section"><h4><i class="ri-code-s-slash-line"></i> Developer</h4><a class="save-btn outline" href="/developer" target="_blank"><i class="ri-external-link-line"></i> Developer Help</a></div>
+<div class="settings-section"><h4><i class="ri-shield-user-line"></i> Admin unlock</h4><div id="adminLoginRow"><input type="password" id="adminPasswordInput" placeholder="Admin password"><button class="save-btn" id="adminLoginBtn"><i class="ri-lock-unlock-line"></i> Unlock</button></div><p class="field-hint" id="adminStatus"></p></div>
+<div class="settings-section" id="providerKeysSection" style="display:none;"><h4><i class="ri-route-line"></i> AIRoute key</h4><input type="password" id="airouteTokenInput" placeholder="air_rt_..."><button class="save-btn" id="saveAirouteBtn"><i class="ri-save-line"></i> Save</button><p class="field-hint" id="airouteStatus"></p>
+<h4 style="margin-top:20px;"><i class="ri-flower-line"></i> Pollinations</h4><input type="password" id="pollinationsTokenInput" placeholder="(optional)"><button class="save-btn" id="savePollinationsBtn"><i class="ri-save-line"></i> Save</button><p class="field-hint" id="pollinationsStatus"></p>
+<h4 style="margin-top:20px;"><i class="ri-openai-line"></i> Hugging Face</h4><input type="password" id="hfTokenInput" placeholder="hf_..."><button class="save-btn" id="saveHuggingfaceBtn"><i class="ri-save-line"></i> Save</button><button class="save-btn outline" id="testHfBtn"><i class="ri-flashlight-line"></i> Test</button><p class="field-hint" id="hfStatus"></p></div>
+<div class="settings-section" id="providerKeysLockedNote"><p class="field-hint" id="providerKeysStatus">Checking…</p></div>
+<div class="settings-section"><h4><i class="ri-logout-box-line"></i> Session</h4><button class="save-btn outline" id="logoutBtn"><i class="ri-logout-box-line"></i> Sign out</button></div></div>
+<div class="settings-pane" data-pane="appearance">
+<div class="settings-section"><h4>Mode</h4><div class="option-row" id="modeOptions"><button class="option-btn" data-mode="light"><i class="ri-sun-line"></i> Light</button><button class="option-btn" data-mode="dark"><i class="ri-moon-line"></i> Dark</button></div></div>
+<div class="settings-section"><h4>Accent</h4><div class="theme-swatches" id="themeSwatches">
+<button class="swatch" data-theme="warm" style="--sw1:#c4694b;--sw2:#a8503a"></button>
+<button class="swatch" data-theme="green" style="--sw1:#4ea82e;--sw2:#3a8a1f"></button>
+<button class="swatch" data-theme="orange" style="--sw1:#ea580c;--sw2:#c2410c"></button>
+<button class="swatch" data-theme="pink" style="--sw1:#db2777;--sw2:#a21caf"></button>
+<button class="swatch" data-theme="blue" style="--sw1:#2563eb;--sw2:#4f46e5"></button>
+<button class="swatch" data-theme="violet" style="--sw1:#8b5cf6;--sw2:#6d28d9"></button>
+<button class="swatch" data-theme="mono" style="--sw1:#52525b;--sw2:#27272a"></button></div></div>
+<div class="settings-section"><h4>Corners</h4><div class="option-row" id="cornerOptions"><button class="option-btn" data-corner="sharp">Sharp</button><button class="option-btn" data-corner="soft">Soft</button><button class="option-btn" data-corner="round">Round</button></div></div>
+<div class="settings-section"><h4>Font</h4><div class="option-row" id="fontOptions"><button class="option-btn" data-font="system">System</button><button class="option-btn" data-font="inter">Inter</button><button class="option-btn" data-font="mono">Mono</button></div></div></div>
+<div class="settings-pane" data-pane="voice"><div class="settings-section"><h4>Microphone</h4><p class="field-hint" id="speechRecognitionSupport">Checking…</p><button class="save-btn" id="requestMicBtn"><i class="ri-mic-line"></i> Request mic</button><p class="field-hint" id="micStatus"></p></div>
+<div class="settings-section"><h4>AI voice</h4><label class="field-label">Voice</label><select id="voiceSelect"></select><label class="field-label">Speed: <span id="voiceRateLabel">1.0×</span></label><input type="range" id="voiceRateInput" min="0.5" max="2" step="0.1" value="1"><button class="save-btn" id="testVoiceBtn" style="margin-top:14px;"><i class="ri-play-line"></i> Test</button></div></div>
+<div class="settings-pane" data-pane="personalization"><div class="settings-section"><h4>Custom character</h4><textarea id="personaInput" class="image-prompt" rows="4" placeholder="e.g. Talk like a witty pirate."></textarea><button class="save-btn" id="savePersonaBtn"><i class="ri-save-line"></i> Save</button><p class="field-hint" id="personaStatus"></p></div></div>
+<div class="settings-pane" data-pane="memory"><div class="settings-section"><h4>Memory</h4><div class="memory-add-row"><input type="text" id="memoryInput" placeholder="e.g. I prefer concise answers"><button class="save-btn" id="addMemoryBtn"><i class="ri-add-line"></i> Add</button></div><ul class="memory-list" id="memoryList"></ul></div></div>
+<div class="settings-pane" data-pane="admin"><div class="settings-section"><h4>Quick actions</h4><div class="admin-quick-grid"><button class="admin-quick-btn" id="aqOpenConsole"><i class="ri-external-link-line"></i><span>Admin console</span></button><button class="admin-quick-btn" id="aqBroadcast"><i class="ri-megaphone-line"></i><span>Broadcast</span></button><button class="admin-quick-btn" id="aqMaint"><i class="ri-tools-line"></i><span>Toggle maintenance</span></button><button class="admin-quick-btn" id="aqBanSelf"><i class="ri-forbid-2-line"></i><span>Ban my IP</span></button></div><p class="field-hint" id="aqStatus"></p></div>
+<div class="settings-section"><h4>Contact</h4><label class="field-label">Admin email</label><input type="email" id="adminContactEmail"><label class="field-label">Admin phone</label><input type="text" id="adminContactPhone"><button class="save-btn" id="saveAdminContactBtn"><i class="ri-save-line"></i> Save</button><p class="field-hint" id="adminContactStatus"></p></div>
+<div class="settings-section"><h4>Grant subscription</h4><label class="field-label">User email</label><input type="email" id="grantEmailInput"><label class="field-label">Plan</label><select id="grantTierInput"><option value="pro">Pro (30d)</option><option value="ultimate">Ultimate (365d)</option><option value="free">Free</option></select><button class="save-btn" id="grantTierBtn"><i class="ri-check-line"></i> Grant</button><p class="field-hint" id="grantStatus"></p></div></div></div></div>
+
+<!-- BACKGROUND -->
+<div class="modal-overlay" id="backgroundModal"><div class="modal wide"><button class="modal-close" data-close="backgroundModal"><i class="ri-close-line"></i></button>
+<div class="modal-brand"><img src="/logo.png" class="theme-logo" alt=""><h2>Background</h2></div>
+<p class="modal-sub">Personal to this browser only.</p>
+<div class="ext-upload-zone" id="bgUploadZone"><i class="ri-upload-cloud-2-line"></i><span>Click or drag image here</span><input type="file" id="bgFileInput" accept="image/*" hidden></div>
+<label class="field-label">Or paste a URL</label><div class="row"><input type="text" id="bgUrlInput" placeholder="https://..."><button class="save-btn" id="bgUrlApplyBtn" style="margin-top:0;">Apply</button></div>
+<label class="field-label">Dim: <span id="bgDimLabel">45%</span></label><input type="range" id="bgDimInput" min="0" max="90" step="5" value="45">
+<label class="field-label">Blur: <span id="bgBlurLabel">0px</span></label><input type="range" id="bgBlurInput" min="0" max="20" step="1" value="0">
+<label class="field-label">Fit</label><div class="option-row" id="bgFitOptions"><button class="option-btn active" data-fit="cover">Cover</button><button class="option-btn" data-fit="contain">Contain</button><button class="option-btn" data-fit="repeat">Repeat</button></div>
+<div class="row" style="margin-top:20px;"><button class="save-btn" id="bgSaveBtn"><i class="ri-save-line"></i> Save</button><button class="save-btn outline" id="bgRemoveBtn"><i class="ri-delete-bin-line"></i> Remove</button></div><p class="field-hint" id="bgStatus"></p></div></div>
+
+<!-- EXTENSIONS -->
+<div class="modal-overlay" id="extensionsModal"><div class="modal wide"><button class="modal-close" data-close="extensionsModal"><i class="ri-close-line"></i></button>
+<div class="modal-brand"><img src="/logo.png" class="theme-logo" alt=""><h2>Extensions</h2></div>
+<p class="modal-sub">Custom CSS for your browser.</p>
+<div class="ext-section"><p class="field-label">Quick start</p><div class="ext-preset-row"><button class="ext-preset" data-preset="font"><i class="ri-font-size"></i> Custom font</button><button class="ext-preset" data-preset="rounded"><i class="ri-checkbox-blank-circle-line"></i> Rounded</button><button class="ext-preset" data-preset="compact"><i class="ri-layout-row-line"></i> Compact</button><button class="ext-preset" data-preset="accent"><i class="ri-palette-line"></i> Accent</button></div></div>
+<div class="ext-section"><label class="field-label">Name</label><input type="text" id="extNameInput" placeholder="My extension"><label class="field-label">CSS</label><textarea id="extCssInput" class="ext-css-input" rows="8"></textarea><div class="ext-editor-actions"><button class="save-btn" id="extSaveBtn"><i class="ri-save-line"></i> Save</button><button class="save-btn outline" id="extClearBtn"><i class="ri-eraser-line"></i> Clear</button></div><p class="field-hint" id="extStatus"></p></div>
+<div class="ext-section"><p class="field-label">Your extensions</p><ul class="ext-list" id="extList"></ul></div></div></div>
+
+<!-- IMAGE STUDIO -->
+<div class="modal-overlay" id="imageModal"><div class="modal wide"><button class="modal-close" data-close="imageModal"><i class="ri-close-line"></i></button>
+<div class="modal-brand"><img src="/logo.png" class="theme-logo" alt=""><h2>Image Studio</h2></div>
+<p class="modal-sub" id="imageUpgradeHint" style="display:none;">Image generation requires Pro or Ultimate. <a href="#" data-open-plans>Upgrade →</a></p>
+<textarea id="imagePromptInput" class="image-prompt" placeholder="A fox curled up in fresh snow..." rows="3"></textarea>
+<div class="studio-row"><div class="studio-group"><p class="studio-label">Style</p><div class="chip-row" id="styleChips"><button class="chip active" data-style="">None</button><button class="chip" data-style="photo">Photoreal</button><button class="chip" data-style="illustration">Illustration</button><button class="chip" data-style="anime">Anime</button><button class="chip" data-style="3d">3D</button><button class="chip" data-style="watercolor">Watercolor</button></div></div>
+<div class="studio-group"><p class="studio-label">Shape</p><div class="chip-row" id="ratioChips"><button class="chip active" data-ratio="1:1">1:1</button><button class="chip" data-ratio="3:4">3:4</button><button class="chip" data-ratio="4:3">4:3</button><button class="chip" data-ratio="16:9">16:9</button></div></div></div>
+<button class="generate-btn" id="generateImageBtn"><i class="ri-magic-line"></i> Generate</button>
+<p class="field-hint" id="imageStudioStatus"></p>
+<div class="gallery" id="imageGallery"></div></div></div>
+
+<!-- VIDEO STUDIO -->
+<div class="modal-overlay" id="videoModal"><div class="modal wide"><button class="modal-close" data-close="videoModal"><i class="ri-close-line"></i></button>
+<div class="modal-brand"><img src="/logo.png" class="theme-logo" alt=""><h2>Video Studio <span class="badge-pro">Pro</span></h2></div>
+<p class="modal-sub">5-second silent video from AI frames. <b>Sound will come soon.</b></p>
+<p class="modal-sub" id="videoUpgradeHint" style="display:none;color:var(--danger);">Video generation requires Pro or Ultimate. <a href="#" data-open-plans>Upgrade →</a></p>
+<textarea id="videoPromptInput" class="image-prompt" placeholder="A fox running through falling snow..." rows="3"></textarea>
+<div class="studio-row"><div class="studio-group"><p class="studio-label">Style</p><div class="chip-row" id="vstyleChips"><button class="chip active" data-style="">None</button><button class="chip" data-style="photo">Photoreal</button><button class="chip" data-style="illustration">Illustration</button><button class="chip" data-style="anime">Anime</button><button class="chip" data-style="3d">3D</button></div></div></div>
+<button class="generate-btn" id="generateVideoBtn"><i class="ri-movie-2-line"></i> Generate 5s silent video</button>
+<p class="field-hint" id="videoStudioStatus"></p>
+
+<div class="video-loader" id="videoLoader" style="display:none;">
+  <div class="video-loader-ring">
+    <svg viewBox="0 0 120 120"><circle class="ring-bg" cx="60" cy="60" r="52"/><circle class="ring-fg" id="videoRingFg" cx="60" cy="60" r="52"/></svg>
+    <div class="video-loader-pct" id="videoLoaderPct">0%</div>
+  </div>
+  <div class="video-loader-bar"><div class="video-loader-bar-fill" id="videoLoaderBar"></div></div>
+  <div class="video-loader-status" id="videoLoaderStatus">Preparing…</div>
+  <div class="video-loader-sub" id="videoLoaderSub"></div>
+</div>
+
+<div class="video-result" id="videoResult" style="display:none;">
+  <video id="videoPlayer" controls playsinline></video>
+  <div class="video-actions"><a id="videoDownloadLink" class="save-btn outline" download="miroxai-video.webm"><i class="ri-download-2-line"></i> Download</a><span class="sound-note"><i class="ri-volume-mute-line"></i> Sound will come soon</span></div>
+</div></div></div>
+
+<!-- CODE RUNNER -->
+<div class="modal-overlay" id="runModal"><div class="modal wide run-modal"><div class="run-modal-bar"><div class="run-modal-title"><i class="ri-play-circle-fill"></i><span id="runModalLang">Preview</span></div><div class="run-modal-actions"><button class="run-pill-btn" id="runRefreshBtn"><i class="ri-refresh-line"></i> Rerun</button><button class="run-pill-btn ghost" id="runOpenTabBtn"><i class="ri-external-link-line"></i></button><button class="modal-close run-close" data-close="runModal"><i class="ri-close-line"></i></button></div></div>
+<iframe class="run-frame" id="runFrame" sandbox="allow-scripts allow-modals allow-forms allow-popups allow-same-origin"></iframe></div></div>
+
+<!-- CALL -->
+<div class="call-overlay" id="callOverlay"><div class="call-status" id="callStatus">Connecting…</div>
+<div class="call-orb-wrap"><div class="call-orb-ring"></div><div class="call-orb-ring delay"></div><img src="/logo.png" alt="" class="call-orb theme-logo" id="callOrb"></div>
+<p class="call-transcript" id="callTranscript"></p>
+<form class="call-text-fallback" id="callTextForm" style="display:none;"><input type="text" id="callTextInput" placeholder="Type your message"><button type="submit"><i class="ri-send-plane-fill"></i></button></form>
+<div class="call-controls"><button class="call-btn" id="callMuteBtn"><i class="ri-mic-line"></i></button><button class="call-btn end" id="callEndBtn"><i class="ri-phone-line"></i></button></div></div>
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/common.min.js"></script>
+<script src="/script.js"></script>
+</body>
+</html>
