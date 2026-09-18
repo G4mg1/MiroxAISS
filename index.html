@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en" data-mode="light" data-accent="warm" data-corners="soft" data-font="system">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>MiroxAI — by OpenSurr</title>
+<link rel="icon" type="image/png" href="logo.png">
+<link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
+<link id="hljs-dark" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/atom-one-dark.min.css" disabled>
+<link id="hljs-light" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/atom-one-light.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="videoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#c4694b"/><stop offset="100%" stop-color="#8b5cf6"/>
+    </linearGradient>
+  </defs>
+</svg>
+
+<div id="loadingScreen">
+  <img src="logo.png" alt="" class="load-logo">
+  <span class="load-name">MiroxAI</span>
+  <span class="load-sub">by OpenSurr</span>
+  <div class="load-bar"><span></span></div>
+</div>
+
+<div class="app">
+  <div class="sidebar-scrim" id="sidebarScrim"></div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <img src="logo.png" alt=""><span>MiroxAI</span>
+      <button class="sidebar-close" id="sidebarCloseBtn"><i class="ri-close-line"></i></button>
+    </div>
+    <div class="sidebar-search">
+      <i class="ri-search-line"></i>
+      <input type="text" id="chatSearchInput" placeholder="Search chats…">
+      <button id="clearSearchBtn" type="button"><i class="ri-close-line"></i></button>
+    </div>
+    <button class="new-chat-btn" id="newChatBtn"><i class="ri-add-line"></i> New chat</button>
+    <div class="history">
+      <p class="history-label">Chats</p>
+      <ul id="historyList"><li class="history-empty">No conversations yet</li></ul>
+    </div>
+    <div class="tier-chip">
+      <div class="tier-chip-icon"><i class="ri-vip-crown-2-line"></i></div>
+      <div class="tier-chip-info">
+        <div class="tier-chip-label" id="tierLabel">Free plan</div>
+        <div class="tier-chip-meta" id="tierMeta">Running in your browser</div>
+      </div>
+      <button class="tier-chip-btn" id="upgradeBtn">Upgrade</button>
+    </div>
+    <div class="sidebar-footer">
+      <div class="user-chip" id="userChip"><i class="ri-user-3-line"></i><span id="userChipLabel">Sign in</span></div>
+      <button class="icon-only-btn" id="settingsBtn" title="Settings"><i class="ri-settings-3-line"></i></button>
+    </div>
+    <p class="made-by">Made by <b>OpenSurr</b></p>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="hamburger-btn" id="hamburgerBtn"><i class="ri-menu-line"></i></button>
+        <div class="topbar-title">
+          <span class="title-row"><h1 id="chatTitle">New chat</h1>
+          <button class="icon-only-btn small" id="editTitleBtn"><i class="ri-pencil-line"></i></button></span>
+          <small id="chatSubtitle"></small>
+        </div>
+      </div>
+      <div class="topbar-actions">
+        <div class="model-switcher" id="modelSwitcher">
+          <button class="model-chip active" data-model="mirox-gen1">MiroxGen1</button>
+          <button class="model-chip" data-model="mirox-ultra-v1">MiroxUltraV1</button>
+        </div>
+      </div>
+    </header>
+
+    <div class="chat" id="chat">
+      <div class="message ai">
+        <div class="avatar ai-avatar"><img src="logo.png" alt=""></div>
+        <div class="bubble-wrap"><div class="bubble">
+          Hello, I'm MiroxAI. Chat with me.
+        </div></div>
+      </div>
+    </div>
+
+    <div class="attachment-preview" id="attachmentPreview" style="display:none;">
+      <span class="att-spinner" id="attSpinner"><i class="ri-loader-4-line"></i></span>
+      <span class="att-icon" id="attIcon" style="display:none;"><i class="ri-file-text-line"></i></span>
+      <img id="attThumb" class="att-thumb" style="display:none;" alt="">
+      <span id="attachmentName"></span>
+      <button type="button" id="removeAttachmentBtn"><i class="ri-close-line"></i></button>
+    </div>
+
+    <form class="composer" id="composerForm">
+      <button type="button" class="icon-btn" id="attachBtn"><i class="ri-attachment-2"></i></button>
+      <input type="file" id="fileInput" hidden>
+      <button type="button" class="icon-btn" id="micBtn" title="Voice input"><i class="ri-mic-line"></i></button>
+      <input type="text" id="messageInput" placeholder="Message MiroxAI  ·  /image  ·  /video  ·  /plans" autocomplete="off">
+      <button type="submit" class="send-btn" id="sendBtn"><i class="ri-arrow-up-line"></i></button>
+    </form>
+    <p class="disclaimer">MiroxAI can make mistakes. Made by the <b>OpenSurr</b> team.</p>
+  </main>
+
+  <aside class="tool-rail">
+    <div class="rail-head">Tools</div>
+    <div class="rail-items">
+      <button class="rail-btn" id="imageModeBtn"><span class="rail-icon"><i class="ri-image-line"></i></span><span class="rail-label">Image</span></button>
+      <button class="rail-btn" id="videoModeBtn"><span class="rail-icon"><i class="ri-movie-line"></i></span><span class="rail-label">Video</span></button>
+      <button class="rail-btn" id="plansModeBtn"><span class="rail-icon"><i class="ri-vip-crown-2-line"></i></span><span class="rail-label">Plans</span></button>
+      <button class="rail-btn" id="adminRailBtn"><span class="rail-icon"><i class="ri-shield-keyhole-line"></i></span><span class="rail-label">Admin</span></button>
+      <button class="rail-btn" id="aboutBtn"><span class="rail-icon"><i class="ri-information-line"></i></span><span class="rail-label">About</span></button>
+    </div>
+  </aside>
+</div>
+
+<!-- LOGIN -->
+<div class="modal-overlay" id="loginModal"><div class="modal">
+  <button class="modal-close" data-close="loginModal"><i class="ri-close-line"></i></button>
+  <div class="modal-brand"><img src="logo.png" alt=""><h2>Welcome</h2></div>
+  <p class="modal-sub">Enter a name so MiroxAI knows what to call you. Saved only on your device.</p>
+  <form id="loginForm">
+    <label class="field-label">Name</label>
+    <input type="text" id="loginName" placeholder="Alex" required>
+    <button type="submit" class="save-btn full"><i class="ri-check-line"></i> Continue</button>
+  </form>
+</div></div>
+
+<!-- SETTINGS -->
+<div class="modal-overlay" id="settingsModal"><div class="modal wide">
+  <button class="modal-close" data-close="settingsModal"><i class="ri-close-line"></i></button>
+  <div class="modal-brand"><img src="logo.png" alt=""><h2>Settings</h2></div>
+
+  <div class="settings-tabs" id="settingsTabs">
+    <button class="settings-tab active" data-tab="appearance">Appearance</button>
+    <button class="settings-tab" data-tab="personal">Personal</button>
+    <button class="settings-tab" data-tab="behavior">Behavior</button>
+    <button class="settings-tab" data-tab="keys">Keys</button>
+    <button class="settings-tab" data-tab="admin">Admin</button>
+  </div>
+
+  <!-- APPEARANCE -->
+  <div class="settings-pane active" data-pane="appearance">
+    <div class="settings-section">
+      <h4><i class="ri-contrast-2-line"></i> Mode</h4>
+      <div class="option-row" id="modeOptions">
+        <button class="option-btn" data-mode="light"><i class="ri-sun-line"></i> Light</button>
+        <button class="option-btn" data-mode="dark"><i class="ri-moon-line"></i> Dark</button>
+      </div>
+    </div>
+    <div class="settings-section">
+      <h4><i class="ri-palette-line"></i> Accent color</h4>
+      <div class="theme-swatches" id="accentSwatches">
+        <button class="swatch" data-accent="warm" style="--sw1:#c4694b;--sw2:#a8503a" title="Warm"></button>
+        <button class="swatch" data-accent="green" style="--sw1:#4ea82e;--sw2:#3a8a1f" title="Green"></button>
+        <button class="swatch" data-accent="orange" style="--sw1:#ea580c;--sw2:#c2410c" title="Orange"></button>
+        <button class="swatch" data-accent="pink" style="--sw1:#db2777;--sw2:#a21caf" title="Pink"></button>
+        <button class="swatch" data-accent="blue" style="--sw1:#2563eb;--sw2:#4f46e5" title="Blue"></button>
+        <button class="swatch" data-accent="violet" style="--sw1:#8b5cf6;--sw2:#6d28d9" title="Violet"></button>
+        <button class="swatch" data-accent="mono" style="--sw1:#52525b;--sw2:#27272a" title="Mono"></button>
+      </div>
+    </div>
+    <div class="settings-section">
+      <h4><i class="ri-shape-line"></i> Corner style</h4>
+      <div class="option-row" id="cornersOptions">
+        <button class="option-btn" data-corners="sharp">Sharp</button>
+        <button class="option-btn" data-corners="soft">Soft</button>
+        <button class="option-btn" data-corners="round">Round</button>
+      </div>
+    </div>
+    <div class="settings-section">
+      <h4><i class="ri-font-size-2"></i> Font</h4>
+      <div class="option-row" id="fontOptions">
+        <button class="option-btn" data-font="system">System</button>
+        <button class="option-btn" data-font="inter">Inter</button>
+        <button class="option-btn" data-font="mono">Mono</button>
+      </div>
+    </div>
+    <div class="settings-section">
+      <h4><i class="ri-layout-line"></i> Density</h4>
+      <div class="option-row" id="densityOptions">
+        <button class="option-btn" data-density="compact">Compact</button>
+        <button class="option-btn" data-density="normal">Normal</button>
+        <button class="option-btn" data-density="comfy">Comfy</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PERSONAL -->
+  <div class="settings-pane" data-pane="personal">
+    <div class="settings-section">
+      <h4><i class="ri-user-3-line"></i> Your name</h4>
+      <label class="field-label">What should MiroxAI call you?</label>
+      <input type="text" id="setUserName" placeholder="Alex">
+    </div>
+    <div class="settings-section">
+      <h4><i class="ri-emotion-happy-line"></i> Friendship style</h4>
+      <p class="field-hint" style="margin-bottom:10px;">MiroxAI is your personal AI friend. Pick how they talk to you.</p>
+      <div class="option-row" id="friendshipOptions">
+        <button class="option-btn" data-friendship="bestie">Bestie</button>
+        <button class="option-btn" data-friendship="supportive">Supportive</button>
+        <button class="option-btn" data-friendship="casual">Casual</button>
+        <button class="option-btn" data-friendship="witty">Witty</button>
+      </div>
+    </div>
+    <div class="settings-section">
+      <h4><i class="ri-user-star-line"></i> Extra instructions</h4>
+      <label class="field-label">Anything else MiroxAI should know?</label>
+      <textarea id="setPersona" class="image-prompt" rows="4" placeholder="e.g. I love space stuff. Keep answers short. Call me 'boss'."></textarea>
+      <p class="field-hint">Added to every conversation on this browser.</p>
+    </div>
+  </div>
+
+  <!-- BEHAVIOR -->
+  <div class="settings-pane" data-pane="behavior">
+    <div class="settings-section">
+      <h4><i class="ri-shield-check-line"></i> Confirm dangerous actions</h4>
+      <label class="toggle-row"><span>Ask before deleting chats</span>
+        <input type="checkbox" id="setConfirmDelete">
+        <span class="toggle-switch"></span>
+      </label>
+    </div>
+    <div class="settings-section">
+      <h4><i class="ri-message-2-line"></i> Reply style</h4>
+      <div class="option-row" id="replyStyleOptions">
+        <button class="option-btn" data-style="concise">Concise</button>
+        <button class="option-btn" data-style="balanced">Balanced</button>
+        <button class="option-btn" data-style="detailed">Detailed</button>
+      </div>
+    </div>
+    <div class="settings-section">
+      <h4><i class="ri-brain-line"></i> Reasoning depth</h4>
+      <div class="option-row" id="reasoningOptions">
+        <button class="option-btn" data-reasoning="short">Short</button>
+        <button class="option-btn" data-reasoning="auto">Auto</button>
+        <button class="option-btn" data-reasoning="deep">Deep</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- KEYS -->
+  <div class="settings-pane" data-pane="keys">
+    <div class="settings-section">
+      <h4><i class="ri-key-2-line"></i> Your personal API keys</h4>
+      <p class="field-hint" style="margin-bottom:14px;">Optional. If provided, these are used before the shared browser defaults. Leave blank to use MiroxAI's built-in free tier.</p>
+
+      <label class="field-label">Pollinations API key</label>
+      <input type="password" id="keyPollinations" placeholder="pk_...">
+      <p class="field-hint">Raises rate limits. Get one at pollinations.ai</p>
+
+      <label class="field-label" style="margin-top:16px;">Hugging Face token</label>
+      <input type="password" id="keyHuggingface" placeholder="hf_...">
+      <p class="field-hint">Used as a fallback provider. Get one at huggingface.co/settings/tokens</p>
+
+      <label class="field-label" style="margin-top:16px;">AIRoute API key</label>
+      <input type="password" id="keyAirouteToken" placeholder="air_rt_...">
+      <label class="field-label">AIRoute base URL</label>
+      <input type="text" id="keyAirouteBase" placeholder="https://route-ai-playground.lovable.app">
+
+      <button class="save-btn full" id="saveKeysBtn"><i class="ri-save-line"></i> Save keys</button>
+      <p class="field-hint" id="keysSaveStatus"></p>
+    </div>
+  </div>
+
+  <!-- ADMIN -->
+  <div class="settings-pane" data-pane="admin">
+    <div class="settings-section" id="adminLockedSection">
+      <h4><i class="ri-lock-line"></i> Admin unlock</h4>
+      <p class="field-hint" style="margin-bottom:10px;">Enter the admin password to access the admin section.</p>
+      <input type="password" id="adminPasswordInput" placeholder="••••">
+      <button class="save-btn full" id="adminUnlockBtn"><i class="ri-lock-unlock-line"></i> Unlock</button>
+      <p class="field-hint" id="adminUnlockStatus"></p>
+    </div>
+
+    <div id="adminUnlockedSection" style="display:none;">
+      <div class="settings-section">
+        <h4><i class="ri-shield-keyhole-line"></i> Admin API keys</h4>
+        <p class="field-hint" style="margin-bottom:14px;">These override the user keys for everyone on this browser.</p>
+
+        <label class="field-label">Pollinations API key</label>
+        <input type="password" id="adminKeyPollinations" placeholder="pk_...">
+        <label class="field-label" style="margin-top:16px;">Hugging Face token</label>
+        <input type="password" id="adminKeyHuggingface" placeholder="hf_...">
+        <label class="field-label" style="margin-top:16px;">AIRoute API key</label>
+        <input type="password" id="adminKeyAirouteToken" placeholder="air_rt_...">
+        <label class="field-label">AIRoute base URL</label>
+        <input type="text" id="adminKeyAirouteBase" placeholder="https://route-ai-playground.lovable.app">
+
+        <button class="save-btn full" id="saveAdminKeysBtn"><i class="ri-save-line"></i> Save admin keys</button>
+        <p class="field-hint" id="adminKeysSaveStatus"></p>
+      </div>
+
+      <div class="settings-section">
+        <h4><i class="ri-megaphone-line"></i> Broadcast message</h4>
+        <label class="field-label">Message shown to all users on this browser</label>
+        <input type="text" id="adminBroadcast" placeholder="Welcome to MiroxAI!">
+        <div class="option-row" id="broadcastTypeOptions" style="margin-top:10px;">
+          <button class="option-btn active" data-btype="info">Info</button>
+          <button class="option-btn" data-btype="warn">Warning</button>
+          <button class="option-btn" data-btype="danger">Danger</button>
+          <button class="option-btn" data-btype="success">Success</button>
+        </div>
+        <button class="save-btn full" id="saveBroadcastBtn"><i class="ri-send-plane-fill"></i> Publish</button>
+        <p class="field-hint" id="broadcastStatus"></p>
+      </div>
+
+      <div class="settings-section">
+        <h4><i class="ri-tools-line"></i> Maintenance mode</h4>
+        <label class="toggle-row"><span>Show maintenance banner</span>
+          <input type="checkbox" id="adminMaintenance">
+          <span class="toggle-switch"></span>
+        </label>
+        <label class="field-label">Maintenance message</label>
+        <input type="text" id="adminMaintenanceMsg" placeholder="MiroxAI is under maintenance.">
+        <button class="save-btn full" id="saveMaintenanceBtn"><i class="ri-save-line"></i> Save</button>
+      </div>
+
+      <div class="settings-section">
+        <h4><i class="ri-lock-line"></i> Lock admin section</h4>
+        <button class="save-btn outline full" id="adminLockBtn"><i class="ri-lock-line"></i> Lock now</button>
+      </div>
+    </div>
+  </div>
+</div></div>
+
+<!-- IMAGE STUDIO -->
+<div class="modal-overlay" id="imageModal"><div class="modal wide">
+  <button class="modal-close" data-close="imageModal"><i class="ri-close-line"></i></button>
+  <div class="modal-brand"><img src="logo.png" alt=""><h2>Image Studio</h2></div>
+  <textarea id="imagePromptInput" class="image-prompt" placeholder="A fox curled up in fresh snow..." rows="3"></textarea>
+  <div class="studio-row">
+    <div class="studio-group"><p class="studio-label">Style</p>
+      <div class="chip-row" id="styleChips">
+        <button class="chip active" data-style="">None</button>
+        <button class="chip" data-style="photo">Photoreal</button>
+        <button class="chip" data-style="illustration">Illustration</button>
+        <button class="chip" data-style="anime">Anime</button>
+        <button class="chip" data-style="3d">3D</button>
+      </div>
+    </div>
+    <div class="studio-group"><p class="studio-label">Shape</p>
+      <div class="chip-row" id="ratioChips">
+        <button class="chip active" data-ratio="1:1">1:1</button>
+        <button class="chip" data-ratio="3:4">3:4</button>
+        <button class="chip" data-ratio="4:3">4:3</button>
+        <button class="chip" data-ratio="16:9">16:9</button>
+      </div>
+    </div>
+  </div>
+  <button class="generate-btn" id="generateImageBtn"><i class="ri-magic-line"></i> Generate</button>
+  <p class="field-hint" id="imageStudioStatus"></p>
+  <div class="gallery" id="imageGallery"></div>
+</div></div>
+
+<!-- VIDEO STUDIO -->
+<div class="modal-overlay" id="videoModal"><div class="modal wide">
+  <button class="modal-close" data-close="videoModal"><i class="ri-close-line"></i></button>
+  <div class="modal-brand"><img src="logo.png" alt=""><h2>Video Studio</h2></div>
+  <p class="modal-sub">5-second silent video built entirely in your browser. <b>Sound will come soon.</b></p>
+  <textarea id="videoPromptInput" class="image-prompt" placeholder="A fox running through falling snow..." rows="3"></textarea>
+  <div class="studio-row"><div class="studio-group"><p class="studio-label">Style</p>
+    <div class="chip-row" id="vstyleChips">
+      <button class="chip active" data-style="">None</button>
+      <button class="chip" data-style="photo">Photoreal</button>
+      <button class="chip" data-style="illustration">Illustration</button>
+      <button class="chip" data-style="anime">Anime</button>
+      <button class="chip" data-style="3d">3D</button>
+    </div>
+  </div></div>
+  <button class="generate-btn" id="generateVideoBtn"><i class="ri-movie-2-line"></i> Generate 5s silent video</button>
+  <p class="field-hint" id="videoStudioStatus"></p>
+
+  <div class="video-loader" id="videoLoader" style="display:none;">
+    <div class="video-loader-ring">
+      <svg viewBox="0 0 120 120">
+        <circle class="ring-bg" cx="60" cy="60" r="52"/>
+        <circle class="ring-fg" id="videoRingFg" cx="60" cy="60" r="52"/>
+      </svg>
+      <div class="video-loader-pct" id="videoLoaderPct">0%</div>
+    </div>
+    <div class="video-loader-bar"><div class="video-loader-bar-fill" id="videoLoaderBar"></div></div>
+    <div class="video-loader-status" id="videoLoaderStatus">Preparing…</div>
+    <div class="video-loader-sub" id="videoLoaderSub"></div>
+  </div>
+
+  <div class="video-result" id="videoResult" style="display:none;">
+    <video id="videoPlayer" controls playsinline></video>
+    <div class="video-actions">
+      <a id="videoDownloadLink" class="save-btn outline" download="miroxai-video.webm"><i class="ri-download-2-line"></i> Download</a>
+      <span class="sound-note"><i class="ri-volume-mute-line"></i> Sound will come soon</span>
+    </div>
+  </div>
+</div></div>
+
+<!-- PLANS -->
+<div class="modal-overlay" id="plansModal"><div class="modal wide">
+  <button class="modal-close" data-close="plansModal"><i class="ri-close-line"></i></button>
+  <div class="modal-brand"><img src="logo.png" alt=""><h2>Plans</h2></div>
+  <p class="modal-sub">Choose the plan that fits you. Pay with Robux via gamepass, then upload a screenshot of your receipt. An admin will verify and activate your plan.</p>
+  <div class="plans-grid" id="plansGrid"></div>
+  <div class="plans-note">
+    <i class="ri-alert-line"></i>
+    <div>
+      <b>How to activate your plan:</b>
+      <ol>
+        <li>Pick a plan and click <b>Buy</b>.</li>
+        <li>Buy the Roblox gamepass and take a screenshot of the receipt.</li>
+        <li>Upload the screenshot in the next step.</li>
+        <li>An admin will verify and activate your plan.</li>
+      </ol>
+      <p class="plans-warning"><b>⚠ Warning:</b> Fake or AI-edited screenshots = <b>permanent ban</b>, no refund.</p>
+    </div>
+  </div>
+  <div class="my-orders" id="myOrders"></div>
+</div></div>
+
+<!-- BUY -->
+<div class="modal-overlay" id="buyModal"><div class="modal">
+  <button class="modal-close" data-close="buyModal"><i class="ri-close-line"></i></button>
+  <div class="modal-brand"><img src="logo.png" alt=""><h2 id="buyTitle">Buy plan</h2></div>
+  <p class="modal-sub" id="buySub">Pay with Robux via the Roblox gamepass, then upload a screenshot of your receipt.</p>
+  <a id="gamepassLink" class="buy-option rbx" href="#" target="_blank" rel="noopener">
+    <div class="buy-option-icon"><i class="ri-robot-2-line"></i></div>
+    <div class="buy-option-info">
+      <div class="buy-option-title">Open Roblox gamepass</div>
+      <div class="buy-option-meta">Tap to open in a new tab, then buy it.</div>
+    </div>
+    <div class="buy-option-price" id="buyPrice">R$ 0</div>
+  </a>
+  <label class="field-label" style="margin-top:18px;">Upload receipt screenshot</label>
+  <div class="ext-upload-zone" id="proofUploadZone">
+    <i class="ri-upload-cloud-2-line"></i>
+    <span>Click or drag a screenshot here</span>
+    <input type="file" id="proofFileInput" accept="image/*" hidden>
+  </div>
+  <div id="proofPreviewWrap" style="display:none;">
+    <img id="proofPreview" class="proof-preview" alt="">
+    <div class="proof-preview-actions">
+      <span id="proofPreviewSize" class="field-hint" style="margin:0;"></span>
+      <button type="button" class="save-btn outline" id="proofRemoveBtn"><i class="ri-delete-bin-line"></i> Remove</button>
+    </div>
+  </div>
+  <p class="field-hint" id="proofStatus"></p>
+  <button class="save-btn full" id="submitProofBtn" disabled><i class="ri-send-plane-fill"></i> Submit for verification</button>
+</div></div>
+
+<!-- ADMIN PANEL -->
+<div class="modal-overlay" id="adminPanelModal"><div class="modal wide">
+  <button class="modal-close" data-close="adminPanelModal"><i class="ri-close-line"></i></button>
+  <div class="modal-brand"><img src="logo.png" alt=""><h2><i class="ri-shield-keyhole-line"></i> Admin · Verification panel</h2></div>
+  <p class="modal-sub">Review pending payment screenshots. Approve to activate the plan, or reject with a note.</p>
+  <div class="admin-stats" id="adminStats"></div>
+  <div class="admin-filters">
+    <button class="chip active" data-filter="pending">Pending</button>
+    <button class="chip" data-filter="approved">Approved</button>
+    <button class="chip" data-filter="rejected">Rejected</button>
+    <button class="chip" data-filter="all">All</button>
+  </div>
+  <div class="admin-list" id="adminList"></div>
+</div></div>
+
+<!-- ABOUT -->
+<div class="modal-overlay" id="aboutModal"><div class="modal">
+  <button class="modal-close" data-close="aboutModal"><i class="ri-close-line"></i></button>
+  <div class="modal-brand"><img src="logo.png" alt=""><h2>About MiroxAI</h2></div>
+  <p class="modal-sub">MiroxAI runs entirely in your browser using the Pollinations AI API. Nothing is sent to any server owned by MiroxAI.</p>
+  <div class="announce-points">
+    <div class="announce-point"><i class="ri-check-line"></i><span>Zero server cost — free forever</span></div>
+    <div class="announce-point"><i class="ri-check-line"></i><span>Your data stays on your device</span></div>
+    <div class="announce-point"><i class="ri-check-line"></i><span>Plans verified by admin</span></div>
+    <div class="announce-point"><i class="ri-check-line"></i><span>Made by OpenSurr</span></div>
+  </div>
+</div></div>
+
+<!-- BROADCAST BANNER -->
+<div id="broadcastBanner" class="broadcast-banner" style="display:none;">
+  <i class="ri-megaphone-line"></i>
+  <span id="broadcastText"></span>
+  <button id="broadcastClose"><i class="ri-close-line"></i></button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/common.min.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
